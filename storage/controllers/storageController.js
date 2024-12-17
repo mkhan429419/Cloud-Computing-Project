@@ -48,6 +48,25 @@ const updateStorageUsage = async (userId, usageDelta, token) => {
   }
 };
 
+const getUserBandwidth = async (userId, token) => {
+  const response = await fetch(`${AUTH_SERVICE_URL}/bandwidth`, {
+    method: "GET",
+    headers: { Authorization: token },
+  });
+  if (!response.ok) throw new Error("Failed to fetch bandwidth details");
+  return await response.json();
+};
+
+// Helper: Update bandwidth usage
+const updateBandwidth = async (userId, dataVolume, token) => {
+  const response = await fetch(`${AUTH_SERVICE_URL}/updateBandwidth`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", Authorization: token },
+    body: JSON.stringify({ userId, dataVolume }),
+  });
+  return await response.json();
+};
+
 // Upload a video
 exports.uploadVideo = async (req, res) => {
   const { name } = req.body;
@@ -56,6 +75,17 @@ exports.uploadVideo = async (req, res) => {
   try {
     if (!file) {
       return res.status(400).json({ message: "No video file provided" });
+    }
+
+    const userId = req.user.firebaseUserId;
+    const token = req.headers.authorization;
+
+    // Fetch and check bandwidth
+    const bandwidth = await getUserBandwidth(userId, token);
+    if (bandwidth.isLimitExceeded || bandwidth.remainingBandwidth < file.size) {
+      return res.status(400).json({
+        message: "Daily bandwidth limit exceeded. Cannot upload video.",
+      });
     }
 
     // Fetch user storage details
@@ -88,11 +118,8 @@ exports.uploadVideo = async (req, res) => {
     await video.save();
 
     // Update storage usage
-    await updateStorageUsage(
-      req.user.firebaseUserId,
-      file.size,
-      req.headers.authorization
-    );
+    await updateStorageUsage(userId, file.size, token);
+    await updateBandwidth(userId, file.size, token);
 
     res.status(200).json({ message: "Video uploaded successfully", video });
   } catch (error) {
@@ -109,6 +136,17 @@ exports.replaceVideo = async (req, res) => {
   try {
     if (!file) {
       return res.status(400).json({ message: "No video file provided" });
+    }
+
+    const userId = req.user.firebaseUserId;
+    const token = req.headers.authorization;
+
+    // Fetch and check bandwidth
+    const bandwidth = await getUserBandwidth(userId, token);
+    if (bandwidth.isLimitExceeded || bandwidth.remainingBandwidth < file.size) {
+      return res.status(400).json({
+        message: "Daily bandwidth limit exceeded. Cannot replace video.",
+      });
     }
 
     const video = await Video.findById(videoId);
@@ -140,11 +178,8 @@ exports.replaceVideo = async (req, res) => {
 
     // Update storage usage
     const usageDelta = file.size - oldSize;
-    await updateStorageUsage(
-      req.user.firebaseUserId,
-      usageDelta,
-      req.headers.authorization
-    );
+    await updateStorageUsage(userId, usageDelta, token);
+    await updateBandwidth(userId, file.size, token);
 
     res.status(200).json({ message: "Video replaced successfully", video });
   } catch (error) {
@@ -190,6 +225,9 @@ exports.deleteVideo = async (req, res) => {
   const { videoId } = req.body;
 
   try {
+    const userId = req.user.firebaseUserId;
+    const token = req.headers.authorization;
+
     const video = await Video.findById(videoId);
 
     if (!video || video.userId !== req.user.firebaseUserId) {
@@ -208,11 +246,10 @@ exports.deleteVideo = async (req, res) => {
     await Video.deleteOne({ _id: videoId });
 
     // Update storage usage
-    await updateStorageUsage(
-      req.user.firebaseUserId,
-      -size,
-      req.headers.authorization
-    );
+    await updateStorageUsage(userId, -size, token);
+
+    // Update bandwidth usage for deletion
+    await updateBandwidth(userId, size, token);
 
     res.status(200).json({ message: "Video deleted successfully" });
   } catch (error) {
@@ -226,6 +263,9 @@ exports.bulkDeleteVideos = async (req, res) => {
   const { videoIds } = req.body;
 
   try {
+    const userId = req.user.firebaseUserId;
+    const token = req.headers.authorization;
+
     const videos = await Video.find({
       _id: { $in: videoIds },
       userId: req.user.firebaseUserId,
@@ -250,11 +290,10 @@ exports.bulkDeleteVideos = async (req, res) => {
     await Video.deleteMany({ _id: { $in: videoIds } });
 
     // Update storage usage
-    await updateStorageUsage(
-      req.user.firebaseUserId,
-      -totalSize,
-      req.headers.authorization
-    );
+    await updateStorageUsage(userId, -totalSize, token);
+
+    // Update bandwidth usage for deletions
+    await updateBandwidth(userId, totalSize, token);
 
     res.status(200).json({ message: "Videos deleted successfully" });
   } catch (error) {

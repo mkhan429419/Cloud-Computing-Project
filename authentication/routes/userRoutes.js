@@ -7,6 +7,8 @@ const {
   resetDailyBandwidth,
   validateToken,
   getUserStorage,
+  updateBandwidth,
+  getBandwidth
 } = require("../controllers/userController");
 const requireAuth = require("../middleware/auth");
 
@@ -20,5 +22,7 @@ router.put("/updateStorageUsage", requireAuth, updateStorageUsage); // Update st
 router.put("/reset-bandwidth", resetDailyBandwidth);
 router.post("/validate-token", validateToken);
 router.get("/storage", requireAuth, getUserStorage);
+router.put("/updateBandwidth", requireAuth, updateBandwidth);
+router.get("/bandwidth", requireAuth, getBandwidth);
 
 module.exports = router;

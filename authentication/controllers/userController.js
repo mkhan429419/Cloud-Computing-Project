@@ -149,6 +149,37 @@ exports.getUserStorage = async (req, res) => {
   }
 };
 
+exports.updateBandwidth = async (req, res) => {
+  const { userId, dataVolume } = req.body;
+  const MAX_DAILY_BANDWIDTH = 100 * 1024 * 1024; // 100MB in bytes
+
+  try {
+    const user = await User.findOne({ firebaseUserId: userId });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Calculate new daily bandwidth usage
+    const newBandwidthUsed = user.dailyBandwidthUsed + dataVolume;
+
+    // Check if it exceeds the daily limit
+    const isLimitExceeded = newBandwidthUsed > MAX_DAILY_BANDWIDTH;
+
+    // Update bandwidth usage
+    user.dailyBandwidthUsed = Math.min(newBandwidthUsed, MAX_DAILY_BANDWIDTH);
+    await user.save();
+
+    res.status(200).json({
+      message: "Daily bandwidth updated successfully",
+      dailyBandwidthUsed: user.dailyBandwidthUsed,
+      isLimitExceeded,
+    });
+  } catch (error) {
+    console.error("Error updating daily bandwidth:", error);
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
 // Reset daily bandwidth
 exports.resetDailyBandwidth = async (req, res) => {
   try {
@@ -156,6 +187,33 @@ exports.resetDailyBandwidth = async (req, res) => {
     res.status(200).json({ message: "Daily bandwidth reset for all users" });
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
+  }
+};
+
+exports.getBandwidth = async (req, res) => {
+  try {
+    const user = await User.findOne({ firebaseUserId: req.user.uid });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const MAX_DAILY_BANDWIDTH = 100 * 1024 * 1024; // 100 MB in bytes
+
+    res.status(200).json({
+      dailyBandwidthUsed: user.dailyBandwidthUsed,
+      maxBandwidth: MAX_DAILY_BANDWIDTH,
+      remainingBandwidth: Math.max(
+        MAX_DAILY_BANDWIDTH - user.dailyBandwidthUsed,
+        0
+      ),
+      isLimitExceeded: user.dailyBandwidthUsed >= MAX_DAILY_BANDWIDTH,
+    });
+  } catch (error) {
+    console.error("Error fetching bandwidth details:", error);
+    res
+      .status(500)
+      .json({ message: "Error fetching bandwidth details", error });
   }
 };
 
