@@ -180,16 +180,6 @@ exports.updateBandwidth = async (req, res) => {
   }
 };
 
-// Reset daily bandwidth
-exports.resetDailyBandwidth = async (req, res) => {
-  try {
-    await User.updateMany({}, { dailyBandwidthUsed: 0 });
-    res.status(200).json({ message: "Daily bandwidth reset for all users" });
-  } catch (error) {
-    res.status(500).json({ message: "Server error", error });
-  }
-};
-
 exports.getBandwidth = async (req, res) => {
   try {
     const user = await User.findOne({ firebaseUserId: req.user.uid });

@@ -4,7 +4,6 @@ const {
   loginUser,
   getUserProfile,
   updateStorageUsage,
-  resetDailyBandwidth,
   validateToken,
   getUserStorage,
   updateBandwidth,
@@ -17,9 +16,8 @@ const router = express.Router();
 // User APIs
 router.post("/register", createUser); // Register a user
 router.post("/login", loginUser); // Log in a user
-router.get("/profile", requireAuth, getUserProfile); // Get user profile
-router.put("/updateStorageUsage", requireAuth, updateStorageUsage); // Update storage usage
-router.put("/reset-bandwidth", resetDailyBandwidth);
+router.get("/profile", requireAuth, getUserProfile); 
+router.put("/updateStorageUsage", requireAuth, updateStorageUsage);
 router.post("/validate-token", validateToken);
 router.get("/storage", requireAuth, getUserStorage);
 router.put("/updateBandwidth", requireAuth, updateBandwidth);
