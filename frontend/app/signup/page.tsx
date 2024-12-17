@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { registerUser } from "../api/route";
 
-
 const SignUpPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
