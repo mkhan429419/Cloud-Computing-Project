@@ -10,7 +10,7 @@ const logRequest = async (req, res, next) => {
 
   const { method, originalUrl } = req; // Request details
   const dataVolume = req.headers["content-length"] || 0; // Approximate data size
-  const action = `${method} ${originalUrl}`; // e.g., POST /api/storage/upload
+  const action = method; // e.g., POST /api/storage/upload
   const resource = originalUrl; // API endpoint being accessed
 
   let userId = "Unknown"; // Default value
