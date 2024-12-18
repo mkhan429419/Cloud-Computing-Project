@@ -1,36 +1,47 @@
-const Usage = require('../models/usage');
-const User = require('../models/users');
-const Log = require('../models/logs');  // Adjust the path as necessary
-const AUTH_SERVICE_URL = "http://localhost:5000/api/users";
+const Log = require("../models/Log");
 
-// Create a new log entry
-const createLog = async (logMessage) => {
-    console.log(`Create log opened`);
-    const logEntry = new Log({
-        log: logMessage,
+// Add a log entry
+exports.addLog = async (req, res) => {
+  try {
+    const { userId, action, resource, dataVolume, status, message } = req.body;
+
+    const log = new Log({
+      userId,
+      action,
+      resource,
+      dataVolume,
+      status,
+      message,
     });
-    try {
-        await logEntry.save();
-        console.log(`Log saved: ${logMessage}`);
-    } catch (err) {
-        console.error('Error saving log:', err);
-    }
+
+    await log.save();
+    res.status(201).json({ message: "Log entry added successfully" });
+  } catch (error) {
+    console.error("Error adding log:", error);
+    res.status(500).json({ message: "Server error", error });
+  }
 };
 
-
-// New endpoint to create a log directly
-const logRequest = async (req, res) => {
-    const { logMessage } = req.body;
-    if (!logMessage) {
-        return res.status(400).json({ message: 'Log message is required.' });
-    }
-    try {
-        await createLog(logMessage);
-        res.status(200).json({ message: 'Log saved successfully.' });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Failed to save log.', error: err.message });
-    }
+// Retrieve all logs
+exports.getLogs = async (req, res) => {
+  try {
+    const logs = await Log.find().sort({ timestamp: -1 });
+    res.status(200).json({ logs });
+  } catch (error) {
+    console.error("Error fetching logs:", error);
+    res.status(500).json({ message: "Server error", error });
+  }
 };
 
-module.exports = { logRequest};
+// Retrieve logs for a specific user
+exports.getLogsByUser = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const logs = await Log.find({ userId }).sort({ timestamp: -1 });
+    res.status(200).json({ logs });
+  } catch (error) {
+    console.error("Error fetching user logs:", error);
+    res.status(500).json({ message: "Server error", error });
+  }
+};
