@@ -15,17 +15,14 @@ const logRequest = async (req, res, next) => {
 
   let userId = "Unknown"; // Default value
 
-  // Extract userId from req.user, req.body, or decode Authorization header
+  // Extract userId from req.user or Authorization header
   try {
     if (req.user?.firebaseUserId) {
-      userId = req.user.firebaseUserId; // Authenticated requests
-    } else if (req.body?.userId) {
-      userId = req.body.userId; // Internal programmatic requests
+      userId = req.user.firebaseUserId; // Already set by validateToken middleware
     } else if (req.headers.authorization) {
       const token = req.headers.authorization.split(" ")[1];
       const decodedToken = await admin.auth().verifyIdToken(token);
-      userId = decodedToken.uid;
-      req.user = { firebaseUserId: userId }; // Attach to req.user for consistency
+      userId = decodedToken.uid; // Extract userId from decoded token
     }
   } catch (error) {
     console.error("Error decoding token in log middleware:", error.message);
