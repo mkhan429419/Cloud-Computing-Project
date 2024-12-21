@@ -248,9 +248,6 @@ exports.deleteVideo = async (req, res) => {
     // Update storage usage
     await updateStorageUsage(userId, -size, token);
 
-    // Update bandwidth usage for deletion
-    await updateBandwidth(userId, size, token);
-
     res.status(200).json({ message: "Video deleted successfully" });
   } catch (error) {
     console.error("Error deleting video:", error);
@@ -291,9 +288,6 @@ exports.bulkDeleteVideos = async (req, res) => {
 
     // Update storage usage
     await updateStorageUsage(userId, -totalSize, token);
-
-    // Update bandwidth usage for deletions
-    await updateBandwidth(userId, totalSize, token);
 
     res.status(200).json({ message: "Videos deleted successfully" });
   } catch (error) {
