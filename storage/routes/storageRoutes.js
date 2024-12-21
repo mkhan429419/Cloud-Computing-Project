@@ -12,7 +12,9 @@ const validateToken = require("../middleware/auth"); // Authentication middlewar
 const logRequest = require("../middleware/logMiddleware"); // Logging middleware
 
 const router = express.Router();
-const upload = multer({ dest: "uploads/" }); // Multer configuration
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage }); // Multer configuration
 
 // Video Routes
 router.post(

@@ -1,4 +1,5 @@
-const STORAGE_API_URL = "http://localhost:3002/api/storage";
+const STORAGE_API_URL =
+  "https://storage-service-967652754037.asia-east1.run.app/api/storage";
 
 // Define a Video interface
 interface Video {

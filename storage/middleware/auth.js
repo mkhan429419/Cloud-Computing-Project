@@ -12,7 +12,7 @@ const validateToken = async (req, res, next) => {
   try {
     // Call the Authentication Microservice to validate the token
     const response = await axios.post(
-      "http://localhost:5000/api/users/validate-token",
+      "https://authentication-service-967652754037.asia-east1.run.app/api/users/validate-token",
       {},
       {
         headers: { Authorization: `Bearer ${token}` },

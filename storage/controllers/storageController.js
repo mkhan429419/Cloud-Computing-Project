@@ -2,7 +2,8 @@ const cloudinary = require("../cloudinaryConfig");
 const Video = require("../models/Storage");
 const fetch = require("node-fetch");
 
-const AUTH_SERVICE_URL = "http://localhost:5000/api/users";
+const AUTH_SERVICE_URL =
+  "https://authentication-service-967652754037.asia-east1.run.app/api/users";
 
 const getUserStorage = async (userId, token) => {
   try {
@@ -70,7 +71,7 @@ const updateBandwidth = async (userId, dataVolume, token) => {
 // Upload a video
 exports.uploadVideo = async (req, res) => {
   const { name } = req.body;
-  const file = req.file;
+  const file = req.file; // File uploaded in memory
 
   try {
     if (!file) {
@@ -94,34 +95,39 @@ exports.uploadVideo = async (req, res) => {
       req.headers.authorization
     );
 
-    // Check if the upload exceeds the remaining storage
     if (userStorage.remainingStorage < file.size) {
       return res.status(400).json({
         message: "Not enough storage available. Please free up space.",
       });
     }
 
-    // Upload video to Cloudinary
-    const result = await cloudinary.uploader.upload(file.path, {
-      resource_type: "video",
-    });
+    // Upload video to Cloudinary using buffer
+    const result = await cloudinary.uploader.upload_stream(
+      { resource_type: "video" },
+      async (error, result) => {
+        if (error) throw new Error("Error uploading video to Cloudinary");
 
-    // Save video details to MongoDB
-    const video = new Video({
-      userId: req.user.firebaseUserId,
-      videoUrl: result.secure_url,
-      publicId: result.public_id,
-      name,
-      size: file.size,
-    });
+        // Save video details to MongoDB
+        const video = new Video({
+          userId: req.user.firebaseUserId,
+          videoUrl: result.secure_url,
+          publicId: result.public_id,
+          name,
+          size: file.size,
+        });
 
-    await video.save();
+        await video.save();
 
-    // Update storage usage
-    await updateStorageUsage(userId, file.size, token);
-    await updateBandwidth(userId, file.size, token);
+        // Update storage and bandwidth usage
+        await updateStorageUsage(userId, file.size, token);
+        await updateBandwidth(userId, file.size, token);
 
-    res.status(200).json({ message: "Video uploaded successfully", video });
+        res.status(200).json({ message: "Video uploaded successfully", video });
+      }
+    );
+
+    // Write file buffer to the Cloudinary stream
+    result.end(file.buffer);
   } catch (error) {
     console.error("Error uploading video:", error);
     res.status(500).json({ message: "Error uploading video", error });
@@ -131,7 +137,7 @@ exports.uploadVideo = async (req, res) => {
 // Replace a video
 exports.replaceVideo = async (req, res) => {
   const { videoId, name } = req.body;
-  const file = req.file;
+  const file = req.file; // File uploaded in memory
 
   try {
     if (!file) {
@@ -162,10 +168,21 @@ exports.replaceVideo = async (req, res) => {
       resource_type: "video",
     });
 
-    // Upload the new video to Cloudinary
-    const result = await cloudinary.uploader.upload(file.path, {
-      resource_type: "video",
+    // Upload the new video to Cloudinary using buffer
+    const uploadPromise = new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        { resource_type: "video" },
+        async (error, result) => {
+          if (error) return reject(error);
+          resolve(result);
+        }
+      );
+
+      // Write the file buffer to the Cloudinary upload stream
+      uploadStream.end(file.buffer);
     });
+
+    const result = await uploadPromise;
 
     // Update video details in MongoDB
     const oldSize = video.size; // Track the size of the old video

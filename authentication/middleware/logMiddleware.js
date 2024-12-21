@@ -44,7 +44,10 @@ const logRequest = async (req, res, next) => {
     };
 
     try {
-      await axios.post("http://localhost:5001/api/monitoring/log", logPayload);
+      await axios.post(
+        "https://monitor-logging-service-967652754037.asia-east1.run.app/api/monitoring/log",
+        logPayload
+      );
       console.log(`Log successfully created for: ${action}`);
     } catch (error) {
       console.error(

@@ -7,11 +7,14 @@ export const registerUser = async (
   password: string,
   name: string
 ): Promise<void> => {
-  const response = await fetch("http://localhost:5000/api/users/register", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password, name }),
-  });
+  const response = await fetch(
+    "https://authentication-service-967652754037.asia-east1.run.app/api/users/register",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password, name }),
+    }
+  );
 
   if (!response.ok) {
     const error = await response.json();
@@ -33,16 +36,19 @@ export const loginUser = async (
 
     // Retrieve Firebase ID token
     const token = await userCredential.user.getIdToken();
-   
+
     // Sync with backend
-    const response = await fetch("http://localhost:5000/api/users/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`, // Pass the Firebase token
-      },
-      body: JSON.stringify({ email }),
-    });
+    const response = await fetch(
+      "https://authentication-service-967652754037.asia-east1.run.app/api/users/login",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Pass the Firebase token
+        },
+        body: JSON.stringify({ email }),
+      }
+    );
 
     if (!response.ok) {
       const error = await response.json();
@@ -61,12 +67,15 @@ export const logoutFromFirebase = async (): Promise<void> => {
 
 export const getUserProfile = async (token: string) => {
   try {
-    const response = await fetch("http://localhost:5000/api/users/profile", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`, // Pass the Firebase token
-      },
-    });
+    const response = await fetch(
+      "https://authentication-service-967652754037.asia-east1.run.app/api/users/profile",
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`, // Pass the Firebase token
+        },
+      }
+    );
 
     if (!response.ok) {
       throw new Error("Failed to fetch user profile");

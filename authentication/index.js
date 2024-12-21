@@ -40,22 +40,28 @@ cron.schedule("0 0 * * *", async () => {
     console.log("Daily bandwidth reset successfully.");
 
     // Log the action to the Logging Microservice
-    await axios.post("http://localhost:6000/api/logs/create", {
-      userId: "SYSTEM", // Indicating it's a system action
-      action: "RESET_DAILY_BANDWIDTH",
-      status: "SUCCESS",
-      message: "Daily bandwidth reset for all users.",
-    });
+    await axios.post(
+      "https://monitor-logging-service-967652754037.asia-east1.run.app/api/logs/create",
+      {
+        userId: "SYSTEM", // Indicating it's a system action
+        action: "RESET_DAILY_BANDWIDTH",
+        status: "SUCCESS",
+        message: "Daily bandwidth reset for all users.",
+      }
+    );
   } catch (error) {
     console.error("Error resetting daily bandwidth:", error);
 
     // Log the failure to the Logging Microservice
-    await axios.post("http://localhost:6000/api/logs/create", {
-      userId: "SYSTEM",
-      action: "RESET_DAILY_BANDWIDTH",
-      status: "FAILURE",
-      message: error.message || "Failed to reset daily bandwidth.",
-    });
+    await axios.post(
+      "https://monitor-logging-service-967652754037.asia-east1.run.app/api/logs/create",
+      {
+        userId: "SYSTEM",
+        action: "RESET_DAILY_BANDWIDTH",
+        status: "FAILURE",
+        message: error.message || "Failed to reset daily bandwidth.",
+      }
+    );
   }
 });
 
