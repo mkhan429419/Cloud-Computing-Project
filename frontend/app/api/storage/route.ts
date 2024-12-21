@@ -117,3 +117,22 @@ export const bulkDeleteVideos = async (
     throw new Error(error.message || "Failed to bulk delete videos");
   }
 };
+// Fetch a single video by ID
+export const getVideoById = async (
+  token: string,
+  videoId: string
+): Promise<Video> => {
+  const response = await fetch(`${STORAGE_API_URL}/video/${videoId}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || "Failed to fetch video details");
+  }
+  const data = await response.json();
+  return data.video as Video;
+};
