@@ -19,3 +19,19 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+@keyframes gradient-x {
+  0% {
+    background-position: 25% 50%; 
+  }
+  50% {
+    background-position: 75% 50%; 
+  }
+  100% {
+    background-position: 25% 50%; 
+  }
+}
+.animate-gradient-x {
+  background-size: 200% 200%; 
+  animation: gradient-x 10s ease infinite;
+}
+

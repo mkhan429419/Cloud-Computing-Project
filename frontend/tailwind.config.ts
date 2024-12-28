@@ -11,7 +11,15 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        black: "#000000", 
+        maroon: "#3D0000", 
+        darkred: "#950101", 
+        red: "#FF0000"
+        
       },
+    },
+    backgroundImage: {
+      'animated-gradient': `linear-gradient(to right,#000000  0%, #3D0000 50%, #950101 100%)`,
     },
   },
   plugins: [],
