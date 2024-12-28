@@ -75,7 +75,7 @@ export const getVideos = async (token: string): Promise<Video[]> => {
   }
 
   const data = await response.json();
-  return data.videos as Video[]; // Use the defined Video interface
+  return data.videos as Video[];
 };
 
 // Delete a video

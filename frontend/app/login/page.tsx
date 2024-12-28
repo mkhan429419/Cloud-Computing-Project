@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { loginUser } from "../api/route";
+import { loginUser } from "../utils/auth/authClient";
 import { useRouter } from "next/navigation";
 
 const LoginPage = () => {
@@ -15,8 +15,8 @@ const LoginPage = () => {
       setError("");
       router.push("/"); // Redirect to home page after successful login
     } catch (err) {
-      console.error("Login error:", err);
-      setError("Failed to log in. Please check your credentials.");
+      console.log("Login error:", err);
+      setError(`${err}`);
     }
   };
 

@@ -188,7 +188,7 @@ exports.getBandwidth = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const MAX_DAILY_BANDWIDTH = 100 * 1024 * 1024; // 100 MB in bytes
+    const MAX_DAILY_BANDWIDTH = 100 * 1024 * 1024; 
 
     res.status(200).json({
       dailyBandwidthUsed: user.dailyBandwidthUsed,

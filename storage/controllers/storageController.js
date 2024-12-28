@@ -163,6 +163,14 @@ exports.replaceVideo = async (req, res) => {
         .json({ message: "Video not found or unauthorized" });
     }
 
+    const userStorage = await getUserStorage(userId, token);
+
+    if (userStorage.remainingStorage < file.size) {
+      return res.status(400).json({
+        message: "Not enough storage available. Please free up space.",
+      });
+    }
+
     // Delete the old video from Cloudinary
     await cloudinary.uploader.destroy(video.publicId, {
       resource_type: "video",

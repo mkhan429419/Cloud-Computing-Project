@@ -1,13 +1,16 @@
 "use client";
 import { useAuth } from "@/providers/AuthContext";
-import { getUserProfile, logoutFromFirebase } from "./api/route";
+import { getUserProfile, logoutFromFirebase } from "./utils/auth/authClient";
 import { useEffect, useState } from "react";
-import { getVideos, replaceVideo, deleteVideo } from "./api/storage/route";
+import {
+  getVideos,
+  replaceVideo,
+  deleteVideo,
+} from "./utils/storage/storageClient";
 import Link from "next/link";
 import { PieChart, Pie, Cell, ResponsiveContainer, Label } from "recharts";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-const MAX_STORAGE = 50 * 1024 * 1024;
 interface Video {
   _id: string;
   userId: string;
@@ -25,6 +28,8 @@ interface UserProfile {
 }
 
 const HomePage = () => {
+  const MAX_DAILY_BANDWIDTH = 100 * 1024 * 1024;
+  const MAX_STORAGE = 50 * 1024 * 1024;
   const { token, initialized } = useAuth(); // Wait for Firebase to initialize
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -44,7 +49,7 @@ const HomePage = () => {
       setVideos(fetchedVideos);
       setError(null);
     } catch (err) {
-      console.error("Error fetching videos:", err);
+      console.log("Error fetching videos:", err);
       setError("Failed to fetch videos.");
       toast.error("Failed to fetch videos.");
     }
@@ -70,7 +75,7 @@ const HomePage = () => {
         autoClose: 3000,
       });
     } catch (err) {
-      console.error("Error replacing video:", err);
+      console.log("Error replacing video:", err);
       setError("Failed to replace video.");
       toast.update(loadingToast, {
         render: "Failed to replace video.",
@@ -88,7 +93,7 @@ const HomePage = () => {
       fetchProfile();
       toast.success("Video deleted successfully!");
     } catch (err) {
-      console.error("Error deleting video:", err);
+      console.log("Error deleting video:", err);
       toast.error("Failed to delete video.");
     }
   };
@@ -96,13 +101,21 @@ const HomePage = () => {
     setLoadingProfile(true);
     if (token) {
       try {
-        const profile = await getUserProfile(token); // Fetch profile from backend
+        const profile = await getUserProfile(token);
         setUserProfile(profile);
-        setError(null); // Clear error if fetching succeeds
+        if (profile.storageUsed > 0.8 * MAX_STORAGE) {
+          toast.warn("80% of your storage is consumed. Watch out.");
+        }
+
+        if (profile.dailyBandwidthUsed > MAX_DAILY_BANDWIDTH) {
+          toast.error("Daily Bandwidth exceeded. Please come back tomorrow.");
+        }
+
+        setError(null);
       } catch (err) {
-        console.error("Error fetching user profile:", err);
+        console.log("Error fetching user profile:", err);
         setError("Failed to fetch user profile.");
-        setUserProfile(null); // Reset profile state on error
+        setUserProfile(null);
         toast.error("Failed to fetch videos.");
       }
     } else {
@@ -126,7 +139,7 @@ const HomePage = () => {
       await logoutFromFirebase();
       window.location.href = "/login";
     } catch (error) {
-      console.error("Failed to log out:", error);
+      console.log("Failed to log out:", error);
     }
   };
   // Calculate used and remaining storage
@@ -159,7 +172,7 @@ const HomePage = () => {
           ) : userProfile ? (
             <div className="text-dark1 mb-6">
               <h1 className="text-3xl font-semibold text-center text-dark1 mb-6">
-                Hello {userProfile.name}!
+                Hello {userProfile.name}! Welcome to Vynx
               </h1>
             </div>
           ) : (
@@ -167,6 +180,11 @@ const HomePage = () => {
           )}
         </div>
         <div className="flex items-baseline">
+          <Link href="/">
+            <h2 className="px-4 text-lg cursor-pointer hover:underline">
+              Home
+            </h2>
+          </Link>
           <Link href="/storage">
             <h2 className="px-4 text-lg cursor-pointer hover:underline">
               Storage

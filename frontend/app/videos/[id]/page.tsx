@@ -1,8 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
-import { getVideoById, getVideos } from "../../api/storage/route";
+import { getVideoById, getVideos } from "../../utils/storage/storageClient";
 import { useAuth } from "@/providers/AuthContext";
-import Link from "next/link"
+import Link from "next/link";
 interface Video {
   _id: string;
   userId: string;
@@ -10,7 +10,7 @@ interface Video {
   publicId: string;
   name: string;
   size: number;
-  createdAt:string;
+  createdAt: string;
 }
 interface VideoDetailPageProps {
   params: Promise<{ id: string }>;
@@ -28,11 +28,11 @@ const VideoDetailPage = ({ params }: VideoDetailPageProps) => {
 
     try {
       const fetchedVideos = await getVideos(token);
-      console.log(fetchedVideos)
+      console.log(fetchedVideos);
       setVideos(fetchedVideos as Video[]);
       setError(null);
     } catch (err) {
-      console.error("Error fetching videos:", err);
+      console.log("Error fetching videos:", err);
       setError("Failed to fetch videos.");
     }
   };
@@ -42,9 +42,11 @@ const VideoDetailPage = ({ params }: VideoDetailPageProps) => {
   }, [token]);
 
   useEffect(() => {
-    params.then(({ id }) => setVideoId(id)).catch(() => {
-      setError("Failed to load video ID.");
-    });
+    params
+      .then(({ id }) => setVideoId(id))
+      .catch(() => {
+        setError("Failed to load video ID.");
+      });
   }, [params]);
 
   useEffect(() => {
@@ -61,7 +63,7 @@ const VideoDetailPage = ({ params }: VideoDetailPageProps) => {
           setError("Video ID or token is missing.");
         }
       } catch (err) {
-        console.error("Error fetching video:", err);
+        console.log("Error fetching video:", err);
         setError("Failed to fetch video.");
       }
     };
@@ -71,21 +73,14 @@ const VideoDetailPage = ({ params }: VideoDetailPageProps) => {
   if (error) return <div>Error: {error}</div>;
   if (!video)
     return (
-      <div
-        className="flex justify-center items-center h-screen"
-        role="status"
-      >
-        <div
-          className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] text-surface motion-reduce:animate-[spin_1.5s_linear_infinite] dark:text-white"
-        >
-          <span
-            className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]"
-          >
+      <div className="flex justify-center items-center h-screen" role="status">
+        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] text-surface motion-reduce:animate-[spin_1.5s_linear_infinite] dark:text-white">
+          <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
             Loading...
           </span>
         </div>
       </div>
-    );  
+    );
 
   const filteredVideos = videos.filter((v) => v._id !== videoId);
 
@@ -105,8 +100,10 @@ const VideoDetailPage = ({ params }: VideoDetailPageProps) => {
         <div className="pt-5 flex items-baseline justify-between">
           <h1 className="text-xl text-white">{video.name}</h1>
           <div className="flex gap-4">
-          <h2 className="text-lg text-white">Size: {video.size} Bytes</h2>
-          <h3 className="text-lg">Uploaded At: {new Date(video.createdAt).toLocaleString()}</h3>
+            <h2 className="text-lg text-white">Size: {video.size} Bytes</h2>
+            <h3 className="text-lg">
+              Uploaded At: {new Date(video.createdAt).toLocaleString()}
+            </h3>
           </div>
         </div>
       </div>
@@ -118,19 +115,19 @@ const VideoDetailPage = ({ params }: VideoDetailPageProps) => {
               className="max-w-sm rounded overflow-hidden shadow-lg shadow-red bg-black"
             >
               <div className="flex flex-col flex-wrap items-center space-y-2 p-5">
-              <Link
-                     href={`/videos/${video._id}`}
-                  >
-                <video
-                  src={video.videoUrl}
-                  controls
-                  className="w-full h-[300px] object-cover"
-                  style={{
-                    clipPath: "inset(0px)",
-                  }}
-                />
-                <p className="font-medium">{video.name}</p>
-                <p className="font-medium">{new Date(video.createdAt).toLocaleString()}</p>
+                <Link href={`/videos/${video._id}`}>
+                  <video
+                    src={video.videoUrl}
+                    controls
+                    className="w-full h-[300px] object-cover"
+                    style={{
+                      clipPath: "inset(0px)",
+                    }}
+                  />
+                  <p className="font-medium">{video.name}</p>
+                  <p className="font-medium">
+                    {new Date(video.createdAt).toLocaleString()}
+                  </p>
                 </Link>
               </div>
             </li>

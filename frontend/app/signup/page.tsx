@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
-import { registerUser } from "../api/route";
-import {useRouter} from 'next/navigation';
+import { registerUser } from "../utils/auth/authClient";
+import { useRouter } from "next/navigation";
 
 const SignUpPage = () => {
   const [email, setEmail] = useState("");
@@ -9,18 +9,18 @@ const SignUpPage = () => {
   const [name, setName] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const router=useRouter();
+  const router = useRouter();
 
   const handleSignUp = async () => {
     try {
       await registerUser(email, password, name);
       setSuccess("Registration successful!");
-     
+
       setError("");
-      router.push('/login');
+      router.push("/login");
     } catch (err) {
-      console.error("Registration error:", err);
-      setError("Failed to register. Please try again.");
+      console.log("Registration error:", err);
+      setError(`${err}`);
       setSuccess("");
     }
   };
@@ -28,7 +28,9 @@ const SignUpPage = () => {
   return (
     <div className="animate-gradient-x flex items-center justify-center min-h-screen bg-animated-gradient">
       <div className="w-full max-w-md bg-black rounded-lg shadow-lg p-6 shadow-red">
-        <h1 className="text-2xl font-bold text-center text-red mb-4">Sign Up</h1>
+        <h1 className="text-2xl font-bold text-center text-red mb-4">
+          Sign Up
+        </h1>
         <div className="space-y-4">
           <input
             type="text"
@@ -51,7 +53,14 @@ const SignUpPage = () => {
             onChange={(e) => setPassword(e.target.value)}
             className="w-full px-4 py-2 border border-darkred rounded-md bg-foreground text-background focus:outline-none focus:ring-2 focus:ring-darkred"
           />
-          <h3 onClick={()=>{router.push("/login")}} className="text-center cursor-pointer p-2 hover:underline">Already have an account</h3>
+          <h3
+            onClick={() => {
+              router.push("/login");
+            }}
+            className="text-center cursor-pointer p-2 hover:underline"
+          >
+            Already have an account
+          </h3>
         </div>
         <button
           onClick={handleSignUp}

@@ -1,4 +1,4 @@
-import { auth } from "../firebase";
+import { auth } from "@/app/firebase";
 import { signOut } from "firebase/auth";
 import { signInWithEmailAndPassword } from "firebase/auth";
 
@@ -18,7 +18,7 @@ export const registerUser = async (
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.message || "Registration failed");
+    throw new Error(error.error.message || "Registration failed");
   }
 };
 
@@ -52,10 +52,10 @@ export const loginUser = async (
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.message || "Login failed");
+      throw new Error(error.error.message || "Login failed");
     }
   } catch (err) {
-    console.error("Error logging in:", err);
+    console.log("Error logging in:", err);
     throw err;
   }
 };
@@ -83,7 +83,7 @@ export const getUserProfile = async (token: string) => {
 
     return await response.json(); // Return user profile
   } catch (error) {
-    console.error("Error fetching user profile:", error);
+    console.log("Error fetching user profile:", error);
     throw error;
   }
 };

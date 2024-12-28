@@ -7,9 +7,9 @@ import {
   getVideos,
   deleteVideo,
   bulkDeleteVideos,
-} from "../api/storage/route";
+} from "../utils/storage/storageClient";
 import { useRef } from "react";
-import { getUserProfile, logoutFromFirebase } from "../api/route";
+import { getUserProfile, logoutFromFirebase } from "../utils/auth/authClient";
 import Link from "next/link";
 import { toast } from "react-toastify";
 
@@ -29,6 +29,8 @@ interface UserProfile {
 }
 
 const StoragePage = () => {
+  const MAX_DAILY_BANDWIDTH = 100 * 1024 * 1024;
+  const MAX_STORAGE = 50 * 1024 * 1024;
   const { token, initialized } = useAuth();
   const [videos, setVideos] = useState<Video[]>([]);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
@@ -46,9 +48,16 @@ const StoragePage = () => {
       try {
         const profile = await getUserProfile(token); // Fetch profile from backend
         setUserProfile(profile);
+        if (profile.storageUsed > 0.8 * MAX_STORAGE) {
+          toast.warn("80% of your storage is consumed. Watch out.");
+        }
+
+        if (profile.dailyBandwidthUsed > MAX_DAILY_BANDWIDTH) {
+          toast.error("Daily Bandwidth exceeded. Please come back tomorrow.");
+        }
         setError(null); // Clear error if fetching succeeds
       } catch (err) {
-        console.error("Error fetching user profile:", err);
+        console.log("Error fetching user profile:", err);
         setError("Failed to fetch user profile.");
         setUserProfile(null); // Reset profile state on error
       }
@@ -71,9 +80,9 @@ const StoragePage = () => {
       setVideos(fetchedVideos);
       setError(null);
     } catch (err) {
-      console.error("Error fetching videos:", err);
+      console.log("Error fetching videos:", err);
       setError("Failed to fetch videos.");
-      toast.error("Failed to fetch videos.");
+      toast.error(`${err}`);
     }
   };
 
@@ -103,10 +112,10 @@ const StoragePage = () => {
         autoClose: 3000,
       });
     } catch (err) {
-      console.error("Error uploading video:", err);
+      console.log("Error uploading video:", err);
       setError("Failed to upload video.");
       toast.update(loadingToast, {
-        render: "Failed to upload video.",
+        render: `${err}`,
         type: "error",
         isLoading: false,
         autoClose: 3000,
@@ -136,10 +145,10 @@ const StoragePage = () => {
         autoClose: 3000,
       });
     } catch (err) {
-      console.error("Error replacing video:", err);
+      console.log("Error replacing video:", err);
       setError("Failed to replace video.");
       toast.update(loadingToast, {
-        render: "Failed to replace video.",
+        render: `${err}`,
         type: "error",
         isLoading: false,
         autoClose: 3000,
@@ -155,7 +164,7 @@ const StoragePage = () => {
       fetchVideos();
       toast.success("Video deleted successfully!");
     } catch (err) {
-      console.error("Error deleting video:", err);
+      console.log("Error deleting video:", err);
       toast.error("Failed to delete video.");
     }
   };
@@ -169,7 +178,7 @@ const StoragePage = () => {
       fetchVideos();
       toast.success("Videos deleted successfully!");
     } catch (err) {
-      console.error("Error bulk deleting videos:", err);
+      console.log("Error bulk deleting videos:", err);
       toast.error("Failed to bulk delete videos.");
     }
   };
@@ -178,7 +187,7 @@ const StoragePage = () => {
       await logoutFromFirebase();
       window.location.href = "/login";
     } catch (error) {
-      console.error("Failed to log out:", error);
+      console.log("Failed to log out:", error);
     }
   };
   useEffect(() => {
@@ -195,7 +204,7 @@ const StoragePage = () => {
           ) : userProfile ? (
             <div className="text-dark1 mb-6">
               <h1 className="text-3xl font-semibold text-center text-dark1 mb-6">
-                Hello {userProfile.name}!
+                Hello {userProfile.name}! Welcome to Vynx
               </h1>
             </div>
           ) : (
@@ -203,6 +212,11 @@ const StoragePage = () => {
           )}
         </div>
         <div className="flex items-baseline">
+          <Link href="/">
+            <h2 className="px-4 text-lg cursor-pointer hover:underline">
+              Home
+            </h2>
+          </Link>
           <Link href="/storage">
             <h2 className="px-4 text-lg cursor-pointer hover:underline">
               Storage

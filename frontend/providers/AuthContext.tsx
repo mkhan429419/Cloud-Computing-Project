@@ -26,8 +26,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           const idToken = await firebaseUser.getIdToken(true); // Force refresh token
           setToken(idToken);
         } catch (error) {
-          console.error("Error fetching Firebase token:", error);
-          setToken(null); // Clear token if retrieval fails
+          console.log("Error fetching Firebase token:", error);
+          setToken(null); 
         }
       } else {
         setUser(null);

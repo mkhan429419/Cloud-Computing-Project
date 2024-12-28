@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/providers/AuthContext";
-import { getUserProfile, logoutFromFirebase } from "../api/route";
+import { getUserProfile, logoutFromFirebase } from "../utils/auth/authClient";
 import Link from "next/link";
 
 interface UserProfile {
@@ -24,7 +24,7 @@ const ProfilePage = () => {
         setUserProfile(profile);
         setError(null); // Clear error if fetching succeeds
       } catch (err) {
-        console.error("Error fetching user profile:", err);
+        console.log("Error fetching user profile:", err);
         setError("Failed to fetch user profile.");
         setUserProfile(null); // Reset profile state on error
       }
@@ -45,7 +45,7 @@ const ProfilePage = () => {
       await logoutFromFirebase();
       window.location.href = "/login";
     } catch (error) {
-      console.error("Failed to log out:", error);
+      console.log("Failed to log out:", error);
     }
   };
 
@@ -59,7 +59,7 @@ const ProfilePage = () => {
           ) : userProfile ? (
             <div className="text-dark1 mb-6">
               <h1 className="text-3xl font-semibold text-center text-dark1 mb-6">
-                Hello {userProfile.name}!
+                Hello {userProfile.name}! Welcome to Vynx
               </h1>
             </div>
           ) : (
@@ -67,6 +67,11 @@ const ProfilePage = () => {
           )}
         </div>
         <div className="flex items-baseline">
+          <Link href="/">
+            <h2 className="px-4 text-lg cursor-pointer hover:underline">
+              Home
+            </h2>
+          </Link>
           <Link href="/storage">
             <h2 className="px-4 text-lg cursor-pointer hover:underline">
               Storage
