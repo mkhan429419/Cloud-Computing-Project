@@ -3,8 +3,8 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
 const cors = require("cors");
-const cron = require("node-cron"); // Cron Scheduler
-const axios = require("axios"); // To log reset actions
+const cron = require("node-cron"); 
+const axios = require("axios"); 
 
 // Load environment variables
 dotenv.config();
@@ -26,7 +26,7 @@ mongoose
 const userRoutes = require("./routes/userRoutes");
 const User = require("./models/User");
 
-// Use routes
+
 app.use("/api/users", userRoutes);
 
 // Scheduled Task: Reset Daily Bandwidth at Midnight
@@ -34,16 +34,16 @@ cron.schedule("0 0 * * *", async () => {
   try {
     console.log("Running daily bandwidth reset...");
 
-    // Reset daily bandwidth for all users
+    
     await User.updateMany({}, { dailyBandwidthUsed: 0 });
 
     console.log("Daily bandwidth reset successfully.");
 
-    // Log the action to the Logging Microservice
+    
     await axios.post(
       "https://monitor-logging-service-967652754037.asia-east1.run.app/api/logs/create",
       {
-        userId: "SYSTEM", // Indicating it's a system action
+        userId: "SYSTEM", 
         action: "RESET_DAILY_BANDWIDTH",
         status: "SUCCESS",
         message: "Daily bandwidth reset for all users.",

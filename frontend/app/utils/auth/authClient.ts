@@ -44,7 +44,7 @@ export const loginUser = async (
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // Pass the Firebase token
+          Authorization: `Bearer ${token}`, 
         },
         body: JSON.stringify({ email }),
       }
@@ -72,7 +72,7 @@ export const getUserProfile = async (token: string) => {
       {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${token}`, // Pass the Firebase token
+          Authorization: `Bearer ${token}`, 
         },
       }
     );
@@ -81,7 +81,7 @@ export const getUserProfile = async (token: string) => {
       throw new Error("Failed to fetch user profile");
     }
 
-    return await response.json(); // Return user profile
+    return await response.json(); 
   } catch (error) {
     console.log("Error fetching user profile:", error);
     throw error;

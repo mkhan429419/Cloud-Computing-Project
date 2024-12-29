@@ -10,26 +10,26 @@ const {
   getBandwidth,
 } = require("../controllers/userController");
 const requireAuth = require("../middleware/auth");
-const logRequest = require("../middleware/logMiddleware"); // Import log middleware
+const logRequest = require("../middleware/logMiddleware"); 
 
 const router = express.Router();
 
 // User APIs
-router.post("/register", logRequest, createUser); // Log entry for register
-router.post("/login", logRequest, loginUser); // Log entry for login
-router.post("/validate-token", logRequest, validateToken); // Log entry for token validation
+router.post("/register", logRequest, createUser); 
+router.post("/login", logRequest, loginUser); 
+router.post("/validate-token", logRequest, validateToken); 
 
 router.put(
   "/updateStorageUsage",
   requireAuth,
-  logRequest, // Log entry for updateStorageUsage
+  logRequest, 
   updateStorageUsage
 );
 
 router.put(
   "/updateBandwidth",
   requireAuth,
-  logRequest, // Log entry for updateBandwidth
+  logRequest, 
   updateBandwidth
 );
 

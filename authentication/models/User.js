@@ -2,25 +2,25 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
 const UserSchema = new mongoose.Schema({
-  firebaseUserId: { type: String, required: true, unique: true }, // Firebase's unique ID
+  firebaseUserId: { type: String, required: true, unique: true }, 
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: true }, // Encrypted password
+  password: { type: String, required: true }, 
   name: { type: String, required: true },
-  storageUsed: { type: Number, default: 0 }, // In bytes
-  dailyBandwidthUsed: { type: Number, default: 0 }, // Daily usage
+  storageUsed: { type: Number, default: 0 }, 
+  dailyBandwidthUsed: { type: Number, default: 0 }, 
   createdAt: { type: Date, default: Date.now },
 });
 
 // Hash password before saving the user
 UserSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next(); // Skip if password is not modified
+  if (!this.isModified("password")) return next(); 
 
   try {
-    const salt = await bcrypt.genSalt(10); // Generate salt
-    this.password = await bcrypt.hash(this.password, salt); // Hash password
+    const salt = await bcrypt.genSalt(10); 
+    this.password = await bcrypt.hash(this.password, salt); 
     next();
   } catch (error) {
-    next(error); // Pass error to Mongoose
+    next(error); 
   }
 });
 

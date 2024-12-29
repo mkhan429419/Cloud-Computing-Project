@@ -36,8 +36,8 @@ const StoragePage = () => {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
-  const [name, setName] = useState(""); // Upload video name
-  const [replaceName, setReplaceName] = useState(""); // Name for replace modal
+  const [name, setName] = useState(""); 
+  const [replaceName, setReplaceName] = useState(""); 
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -46,7 +46,7 @@ const StoragePage = () => {
     setLoadingProfile(true);
     if (token) {
       try {
-        const profile = await getUserProfile(token); // Fetch profile from backend
+        const profile = await getUserProfile(token); 
         setUserProfile(profile);
         if (profile.storageUsed > 0.8 * MAX_STORAGE) {
           toast.warn("80% of your storage is consumed. Watch out.");
@@ -55,21 +55,21 @@ const StoragePage = () => {
         if (profile.dailyBandwidthUsed > MAX_DAILY_BANDWIDTH) {
           toast.error("Daily Bandwidth exceeded. Please come back tomorrow.");
         }
-        setError(null); // Clear error if fetching succeeds
+        setError(null); 
       } catch (err) {
         console.log("Error fetching user profile:", err);
         setError("Failed to fetch user profile.");
-        setUserProfile(null); // Reset profile state on error
+        setUserProfile(null); 
       }
     } else {
       setError("User not logged in.");
-      setUserProfile(null); // Reset profile state if no token
+      setUserProfile(null); 
     }
     setLoadingProfile(false);
   };
   useEffect(() => {
     if (initialized) {
-      fetchProfile(); // Fetch user profile once Firebase is initialized
+      fetchProfile(); 
     }
   }, [initialized, token]);
   const fetchVideos = async () => {
@@ -93,7 +93,7 @@ const StoragePage = () => {
       return;
     }
 
-    // Show loading toast
+   
     const loadingToast = toast.loading("Uploading video...");
 
     try {
@@ -101,7 +101,7 @@ const StoragePage = () => {
       setError(null);
       fetchVideos();
       setFile(null);
-      setName(""); // Reset upload name after successful upload
+      setName(""); 
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }

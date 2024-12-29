@@ -30,10 +30,10 @@ interface UserProfile {
 const HomePage = () => {
   const MAX_DAILY_BANDWIDTH = 100 * 1024 * 1024;
   const MAX_STORAGE = 50 * 1024 * 1024;
-  const { token, initialized } = useAuth(); // Wait for Firebase to initialize
+  const { token, initialized } = useAuth(); 
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [replaceName, setReplaceName] = useState(""); // Name for replace modal
+  const [replaceName, setReplaceName] = useState(""); 
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [file, setFile] = useState<File | null>(null);
@@ -120,19 +120,19 @@ const HomePage = () => {
       }
     } else {
       setError("User not logged in.");
-      setUserProfile(null); // Reset profile state if no token
+      setUserProfile(null); 
     }
     setLoadingProfile(false);
   };
 
   useEffect(() => {
     if (initialized && !token) {
-      router.push("/login"); // Redirect to login if user is not authenticated
+      router.push("/login"); 
     } else if (initialized) {
       fetchProfile();
       fetchVideos();
     }
-  }, [initialized, token]); // Re-run when token or initialized state changes
+  }, [initialized, token]); 
 
   const handleLogout = async () => {
     try {
@@ -142,7 +142,7 @@ const HomePage = () => {
       console.log("Failed to log out:", error);
     }
   };
-  // Calculate used and remaining storage
+  
   const usedStorage = userProfile?.storageUsed || 0;
   const remainingStorage = MAX_STORAGE - usedStorage;
 
@@ -160,7 +160,7 @@ const HomePage = () => {
           </span>
         </div>
       </div>
-    ); // Show loading while Firebase initializes
+    ); 
   }
   return (
     <div>
@@ -255,7 +255,7 @@ const HomePage = () => {
                 <button
                   onClick={() => {
                     setSelectedVideoId(video._id);
-                    setReplaceName(video.name); // Set replace name here
+                    setReplaceName(video.name); 
                     setIsModalOpen(true);
                   }}
                   className="py-1 px-4 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 focus:outline-none"
@@ -290,8 +290,8 @@ const HomePage = () => {
                 type="text"
                 placeholder="Enter Video Name"
                 className="p-2 border rounded-lg shadow-sm bg-transparent"
-                value={replaceName} // Use replaceName here
-                onChange={(e) => setReplaceName(e.target.value)} // Update replaceName here
+                value={replaceName} 
+                onChange={(e) => setReplaceName(e.target.value)} 
               />
               <input
                 type="file"

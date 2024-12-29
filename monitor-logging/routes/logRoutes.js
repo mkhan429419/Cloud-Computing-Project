@@ -8,8 +8,8 @@ const {
 const router = express.Router();
 
 // Routes for logging
-router.post("/log", addLog); // Add log entry
-router.get("/logs", getLogs); // Retrieve all logs
-router.get("/logs/user/:userId", getLogsByUser); // Retrieve logs for specific user
+router.post("/log", addLog); 
+router.get("/logs", getLogs); 
+router.get("/logs/user/:userId", getLogsByUser); 
 
 module.exports = router;

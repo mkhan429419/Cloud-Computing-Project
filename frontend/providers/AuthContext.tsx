@@ -23,7 +23,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       if (firebaseUser) {
         try {
           setUser(firebaseUser);
-          const idToken = await firebaseUser.getIdToken(true); // Force refresh token
+          const idToken = await firebaseUser.getIdToken(true); 
           setToken(idToken);
         } catch (error) {
           console.log("Error fetching Firebase token:", error);
@@ -33,10 +33,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         setUser(null);
         setToken(null);
       }
-      setInitialized(true); // Mark Firebase as initialized
+      setInitialized(true); 
     });
 
-    return () => unsubscribe(); // Cleanup listener
+    return () => unsubscribe();
   }, []);
 
   return (

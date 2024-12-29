@@ -20,25 +20,25 @@ const ProfilePage = () => {
     setLoadingProfile(true);
     if (token) {
       try {
-        const profile = await getUserProfile(token); // Fetch profile from backend
+        const profile = await getUserProfile(token); 
         setUserProfile(profile);
-        setError(null); // Clear error if fetching succeeds
+        setError(null); 
       } catch (err) {
         console.log("Error fetching user profile:", err);
         setError("Failed to fetch user profile.");
-        setUserProfile(null); // Reset profile state on error
+        setUserProfile(null); 
       }
     } else {
       setError("User not logged in.");
-      setUserProfile(null); // Reset profile state if no token
+      setUserProfile(null); 
     }
     setLoadingProfile(false);
   };
   useEffect(() => {
     if (initialized) {
-      fetchProfile(); // Fetch user profile once Firebase is initialized
+      fetchProfile(); 
     }
-  }, [initialized, token]); // Re-fetch if token updates
+  }, [initialized, token]); 
 
   const handleLogout = async () => {
     try {
@@ -92,10 +92,10 @@ const ProfilePage = () => {
       </div>
       <div className="w-full h-[calc(100vh-140px)] flex items-center justify-center">
         {" "}
-        {/* Adjusted height */}
+        
         <div className="inline-block shadow-lg shadow-red p-10">
           {" "}
-          {/* Centered profile */}
+          
           {error && <p className="text-center text-red-500 mb-4">{error}</p>}
           {loadingProfile ? (
             <p className="text-center">Loading user profile...</p>

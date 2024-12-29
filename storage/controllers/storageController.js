@@ -11,7 +11,7 @@ const getUserStorage = async (userId, token) => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: token, // Pass the token from the request
+        Authorization: token, 
       },
     });
 
@@ -35,7 +35,7 @@ const updateStorageUsage = async (userId, usageDelta, token) => {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        Authorization: token, // Pass the token from the request
+        Authorization: token, 
       },
       body: JSON.stringify({ userId, usageDelta }),
     });
@@ -71,7 +71,7 @@ const updateBandwidth = async (userId, dataVolume, token) => {
 // Upload a video
 exports.uploadVideo = async (req, res) => {
   const { name } = req.body;
-  const file = req.file; // File uploaded in memory
+  const file = req.file; 
 
   try {
     if (!file) {
@@ -137,7 +137,7 @@ exports.uploadVideo = async (req, res) => {
 // Replace a video
 exports.replaceVideo = async (req, res) => {
   const { videoId, name } = req.body;
-  const file = req.file; // File uploaded in memory
+  const file = req.file; 
 
   try {
     if (!file) {
@@ -193,7 +193,7 @@ exports.replaceVideo = async (req, res) => {
     const result = await uploadPromise;
 
     // Update video details in MongoDB
-    const oldSize = video.size; // Track the size of the old video
+    const oldSize = video.size; 
     video.videoUrl = result.secure_url;
     video.publicId = result.public_id;
     video.name = name;
@@ -267,7 +267,7 @@ exports.deleteVideo = async (req, res) => {
     });
 
     // Delete video from MongoDB using deleteOne
-    const size = video.size; // Track size for updating storage
+    const size = video.size; 
     await Video.deleteOne({ _id: videoId });
 
     // Update storage usage
@@ -305,13 +305,13 @@ exports.bulkDeleteVideos = async (req, res) => {
       resource_type: "video",
     });
 
-    // Calculate total storage to free
+   
     const totalSize = videos.reduce((acc, video) => acc + video.size, 0);
 
-    // Delete videos from MongoDB
+    
     await Video.deleteMany({ _id: { $in: videoIds } });
 
-    // Update storage usage
+   
     await updateStorageUsage(userId, -totalSize, token);
 
     res.status(200).json({ message: "Videos deleted successfully" });

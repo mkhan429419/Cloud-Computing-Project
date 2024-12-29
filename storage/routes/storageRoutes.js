@@ -8,42 +8,42 @@ const {
   deleteVideo,
   bulkDeleteVideos,
 } = require("../controllers/storageController");
-const validateToken = require("../middleware/auth"); // Authentication middleware
-const logRequest = require("../middleware/logMiddleware"); // Logging middleware
+const validateToken = require("../middleware/auth"); 
+const logRequest = require("../middleware/logMiddleware"); 
 
 const router = express.Router();
 
 const storage = multer.memoryStorage();
-const upload = multer({ storage }); // Multer configuration
+const upload = multer({ storage }); 
 
 // Video Routes
 router.post(
   "/upload",
-  validateToken, // Validate token first
-  logRequest, // Log the request
+  validateToken, 
+  logRequest, 
   upload.single("video"),
   uploadVideo
 );
 
 router.put(
   "/replace",
-  validateToken, // Validate token first
-  logRequest, // Log the request
+  validateToken, 
+  logRequest, 
   upload.single("video"),
   replaceVideo
 );
 
 router.delete(
   "/delete",
-  validateToken, // Validate token first
-  logRequest, // Log the request
+  validateToken, 
+  logRequest, 
   deleteVideo
 );
 
 router.delete(
   "/bulk-delete",
-  validateToken, // Validate token first
-  logRequest, // Log the request
+  validateToken, 
+  logRequest,
   bulkDeleteVideos
 );
 

@@ -13,7 +13,7 @@ const LoginPage = () => {
     try {
       await loginUser(email, password);
       setError("");
-      router.push("/"); // Redirect to home page after successful login
+      router.push("/"); 
     } catch (err) {
       console.log("Login error:", err);
       setError(`${err}`);

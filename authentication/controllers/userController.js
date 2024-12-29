@@ -16,7 +16,7 @@ exports.createUser = async (req, res) => {
     const user = new User({
       firebaseUserId: firebaseUser.uid,
       email,
-      password, // This will be hashed by the pre-save hook in User.js
+      password, 
       name,
     });
 
@@ -30,15 +30,15 @@ exports.createUser = async (req, res) => {
 };
 
 exports.loginUser = async (req, res) => {
-  const { email } = req.body; // Extract email from the request
-  const firebaseToken = req.headers.authorization?.split(" ")[1]; // Extract Firebase token from Authorization header
+  const { email } = req.body; 
+  const firebaseToken = req.headers.authorization?.split(" ")[1]; 
 
   if (!firebaseToken) {
     return res.status(401).json({ message: "Unauthorized: No token provided" });
   }
 
   try {
-    // Verify Firebase token
+    
     const decodedToken = await admin.auth().verifyIdToken(firebaseToken);
 
     if (decodedToken.email !== email) {
@@ -81,8 +81,8 @@ exports.getUserProfile = async (req, res) => {
 };
 
 exports.updateStorageUsage = async (req, res) => {
-  const { userId, usageDelta } = req.body; // usageDelta is the size to add or subtract (can be positive or negative)
-  const MAX_STORAGE = 50 * 1024 * 1024; // 50 MB in bytes
+  const { userId, usageDelta } = req.body;
+  const MAX_STORAGE = 50 * 1024 * 1024; 
 
   try {
     // Fetch the user by firebaseUserId
@@ -109,7 +109,7 @@ exports.updateStorageUsage = async (req, res) => {
     const thresholdExceeded = newStorageUsed > storageThreshold;
 
     // Update the storage usage in the database
-    user.storageUsed = Math.max(newStorageUsed, 0); // Ensure storageUsed doesn't go below zero
+    user.storageUsed = Math.max(newStorageUsed, 0); 
     await user.save();
 
     // Return success response with storage usage details
@@ -133,8 +133,7 @@ exports.getUserStorage = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const MAX_STORAGE = 50 * 1024 * 1024; // 50 MB in bytes
-
+    const MAX_STORAGE = 50 * 1024 * 1024;
     res.status(200).json({
       storageUsed: user.storageUsed,
       maxStorage: MAX_STORAGE,
@@ -151,7 +150,7 @@ exports.getUserStorage = async (req, res) => {
 
 exports.updateBandwidth = async (req, res) => {
   const { userId, dataVolume } = req.body;
-  const MAX_DAILY_BANDWIDTH = 100 * 1024 * 1024; // 100MB in bytes
+  const MAX_DAILY_BANDWIDTH = 100 * 1024 * 1024; 
 
   try {
     const user = await User.findOne({ firebaseUserId: userId });
