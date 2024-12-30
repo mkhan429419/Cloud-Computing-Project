@@ -1,16 +1,12 @@
 from locust import HttpUser, task, between
 
 class ProfileTestUser(HttpUser):
-    # Time to wait between the executions of tasks (in seconds)
     wait_time = between(1, 3)
 
-    # The base URL for the service you're testing
     host = "https://authentication-service-967652754037.asia-east1.run.app"
-    
-    # The URL where the test will hit
     base_url = "/api/users/profile"
     
-    # Headers for the OPTIONS request (provided in your example)
+    # Headers for the request
     headers = {
             "accept": "*/*",
             "accept-encoding": "gzip, deflate, br, zstd",
@@ -30,6 +26,5 @@ class ProfileTestUser(HttpUser):
 
     @task
     def profile_options(self):
-        # Make the OPTIONS request to the /profile endpoint
         self.client.options(self.base_url, headers=self.headers)
 

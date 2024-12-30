@@ -3,11 +3,8 @@ import json
 
 class UserProfileBehavior(HttpUser):
     host = "https://authentication-service-967652754037.asia-east1.run.app"  # Set the host URL
-
-    # The wait time between task executions
     wait_time = between(1, 2)
 
-    # Define a method to simulate GET request to retrieve the user profile
     @task
     def get_user_profile(self):
         # Define the Authorization header with the Bearer token
@@ -25,14 +22,12 @@ class UserProfileBehavior(HttpUser):
             "sec-fetch-site": "cross-site"
         }
 
-        # Send GET request to retrieve the user profile
         response = self.client.get("/api/users/profile", headers=headers)
 
         # Print the response code and content to debug
         print(f"Response Code: {response.status_code}")
         print(f"Response Content: {response.text}")
-
-        # Assert that the status code is 200 (OK)
+        #debug statement
         if response.status_code == 200:
             print("Successfully retrieved user profile")
         else:

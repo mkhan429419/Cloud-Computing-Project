@@ -1,16 +1,14 @@
 from locust import HttpUser, task, between
 
 class VideoApiTestUser(HttpUser):
-    wait_time = between(1, 5)  # Adjust the wait time between requests (1 to 5 seconds)
+    wait_time = between(1, 5)  # Adjust the wait time
     
     def on_start(self):
-        # This method is called when a simulated user starts
-        # You can add logic here for user authentication (like getting the Bearer token)
         self.token = "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImE3MWI1MTU1MmI0ODA5OWNkMGFkN2Y5YmZlNGViODZiMDM5NmUxZDEiLCJ0eXAiOiJKV1QifQ.eyJuYW1lIjoidGVocmVlbSIsImlzcyI6Imh0dHBzOi8vc2VjdXJldG9rZW4uZ29vZ2xlLmNvbS9jbG91ZHByb2plY3QtZjMzYjciLCJhdWQiOiJjbG91ZHByb2plY3QtZjMzYjciLCJhdXRoX3RpbWUiOjE3MzUzOTI3OTYsInVzZXJfaWQiOiJBVHBEaHE5SERoWDhPZld5cTFaSjdORlphN2UyIiwic3ViIjoiQVRwRGhxOUhEaFg4T2ZXeXExWko3TkZaYTdlMiIsImlhdCI6MTczNTM5NTc5NSwiZXhwIjoxNzM1Mzk5Mzk1LCJlbWFpbCI6InRjczQ0OTY0MUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZW1haWwiOlsidGNzNDQ5NjQxQGdtYWlsLmNvbSJdfSwic2lnbl9pbl9wcm92aWRlciI6InBhc3N3b3JkIn19.OHAXqRGE0FDQXIsd7wd9r8-HEGcYzmt05OM4LVNp36mk-6DtuHoVHYLVshjZbQNjFgyeNAVOuEn80TUBd-zyG_fbHDMoS42NgCX0aNuQVkVoDSzlQZMB8Z68E2VkxgdLUp4lQuhvwnw0PP3FTeADAZz4IX0TEKUvEC7E2r-zDFMia0YJSYE08Ao-ozDQ0eDyodb-DDyRTKoiAMp-11g_F0ZISBceg-5xJzmH30R1FSeqqkM2D_VmLnf5h9FZewoBnTRSyAGlhLXV8BMfIfh6Bv0oKxpZl3RXSRgcRjnsAJiH9LsHgUvQDKaF7ZyzPwTzeEON4OZsxwI9llLqD-6AVA"
         
     @task
     def get_all_videos(self):
-        user_id = "ATpDhq9HDhX8OfWyq1ZJ7NFZa7e2"  # Provided user ID
+        user_id = "ATpDhq9HDhX8OfWyq1ZJ7NFZa7e2"  # obtained user id
         
         headers = {
             "Authorization": self.token,
@@ -28,10 +26,9 @@ class VideoApiTestUser(HttpUser):
             "User-Agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36"
         }
 
-        # Make GET request to fetch all videos for the user
+      
         response = self.client.get(f"/api/storage/{user_id}/videos", headers=headers)
 
-        # Optional: You can add assertion checks to verify response content or status
         if response.status_code == 200:
             print("Successfully fetched all videos.")
         else:
